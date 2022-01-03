@@ -17,5 +17,10 @@ for root, directories, files in os.walk(path, topdown=False):
                         print(f"Line: \r\n    {line}")
                         print(file_path)
                         exit(1)
+                    elif 'skillId' in line and 'amzn1.ask.skill.' in line:
+                        print("Don't commit the Alexa Skill Id in the ask-resources.json file.")
+                        print(f"Line: \r\n    {line}")
+                        print(file_path)
+                        exit(1)
 print("No Alexa Skill Id's found in serverless.yml files")
 exit(0)
