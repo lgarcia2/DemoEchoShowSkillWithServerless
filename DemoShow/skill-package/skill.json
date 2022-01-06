@@ -3,7 +3,7 @@
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "{lambda_arn}"
+          "uri": "arn"
         },
         "interfaces": [
           {
