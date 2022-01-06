@@ -5,27 +5,87 @@
 # session persistence, api calls, and more.
 # This sample is built using the handler classes approach in skill builder.
 import logging
+import json
 
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import AbstractRequestHandler
 from ask_sdk_core.dispatch_components import AbstractExceptionHandler
 import ask_sdk_core.utils as ask_utils
 from ask_sdk_core.handler_input import HandlerInput
+from ask_sdk_model.interfaces.alexa.presentation.apl import (RenderDocumentDirective)
 
 from ask_sdk_model import Response
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+
+# APL Document file paths for use in handlers
+hello_world_doc_path = "helloworldDocument.json"
+# Tokens used when sending the APL directives
+HELLO_WORLD_TOKEN = "helloworldToken"
+
+def _load_apl_document(file_path):
+    # type: (str) -> Dict[str, Any]
+    """Load the apl json document at the path into a dict object."""
+    with open(file_path) as f:
+        return json.load(f)
 
 class LaunchRequestHandler(AbstractRequestHandler):
     """Handler for Skill Launch."""
     def can_handle(self, handler_input):
         # type: (HandlerInput) -> bool
-        
+        logging.info("Determining whether handling...")
         return ask_utils.is_request_type("LaunchRequest")(handler_input)
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
+        logging.info("Handling...")
+        supported_interfaces = ask_utils.request_util.get_supported_interfaces(handler_input)
+        # If this device supports APL 
+        # e.g. If this device is an Echo Show
+        if supported_interfaces.alexa_presentation_apl is not None:
+            logging.info('This device supports APL')
+
+            # Flag you can toggle based on where your APL is
+            # This isnt production code, its just for demonstration purposes
+            the_api_document_is_only_in_the_developer_console = True
+
+            # add "Alexa.Presentation.APL.RenderDocument" to the handler_input
+            if the_api_document_is_only_in_the_developer_console:
+                # if your APL is only in the console, load it from the console
+                document_name = "HelloWorldDocument" # The name of the APL we saved
+                token = document_name + "Token"
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token=token,
+                        document={
+                            "src":'doc://alexa/apl/documents/' + document_name,
+                            "type": "Link"
+                        },
+                        datasources={
+                            "helloWorldDataSource":{
+                                "title": "We did it!",
+                                "subtitle": "Hello World is coming from code!",
+                                "color": "@colorTeal800"
+                            }
+                        }
+                    )
+                )
+            else:
+                # if your APL is alongside the code, load it from the package
+                # NOTE: it must be in a specefic place (in the lambda folder)
+                # see https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/use-apl-with-ask-sdk.html 
+                # for more detail
+                handler_input.response_builder.add_directive(
+                    RenderDocumentDirective(
+                        token=HELLO_WORLD_TOKEN,
+                        document=_load_apl_document()
+                    )
+                )
+        else:
+            logging.info('This device does not support APL. \r\n Supported Interfaces: \r\n {supported_interfaces}')
+
+
         speak_output = "Welcome, you can say Hello or Help. Which would you like to try?"
 
         return (
@@ -44,7 +104,7 @@ class HelloWorldIntentHandler(AbstractRequestHandler):
 
     def handle(self, handler_input):
         # type: (HandlerInput) -> Response
-        speak_output = "Hello Python World from Classes!"
+        speak_output = "Hello World!"
 
         return (
             handler_input.response_builder
@@ -151,6 +211,8 @@ class CatchAllExceptionHandler(AbstractExceptionHandler):
 # The SkillBuilder object acts as the entry point for your skill, routing all request and response
 # payloads to the handlers above. Make sure any new handlers or interceptors you've
 # defined are included below. The order matters - they're processed top to bottom.
+
+logging.info("Something")
 
 sb = SkillBuilder()
 

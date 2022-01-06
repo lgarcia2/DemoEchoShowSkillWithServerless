@@ -1,3 +1,7 @@
+# Other items
+DemoShow/lambda/node_modules
+DemoShow/lambda/.serverless
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
