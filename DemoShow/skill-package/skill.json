@@ -2,6 +2,9 @@
   "manifest": {
     "apis": {
       "custom": {
+        "endpoint": {
+          "uri": "{lambda_arn}"
+        },
         "interfaces": [
           {
             "supportedViewports": [

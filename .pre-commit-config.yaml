@@ -10,6 +10,10 @@ repos:
 -   repo: local
     hooks:
     -   id: alexa_skill_id_pygrep_check_git_hook
-        name: Check that an amazon skill is not committed
+        name: Check that an amazon skill is not committed (ask-resources.json, serverless.yml)
         entry: 'amzn1\.ask\.skill\..*'
+        language: pygrep
+    -   id: lambda_arn_pygrep_check_git_hook
+        name: Check that an amazon skill's lambda arn is not committed (skill.json)
+        entry: 'arn:aws:lambda:*:*:function:*'
         language: pygrep
