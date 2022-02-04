@@ -45,16 +45,18 @@ class LaunchRequestHandler(AbstractRequestHandler):
         # e.g. If this device is an Echo Show
         if supported_interfaces.alexa_presentation_apl is not None:
             logging.info('This device supports APL')
-
+            #
             # Flag you can toggle based on where your APL is
             # This isnt production code, its just for demonstration purposes
             the_api_document_is_only_in_the_developer_console = True
-
+            #
             # add "Alexa.Presentation.APL.RenderDocument" to the handler_input
             if the_api_document_is_only_in_the_developer_console:
                 # if your APL is only in the console, load it from the console
-                document_name = "HelloWorldDocument" # The name of the APL we saved
+                document_name = "ImageAPLDocument" # The name of the APL we saved
                 token = document_name + "Token"
+                # using an image api: https://picsum.photos/300/200
+                # for more info see: https://picsum.photos/
                 handler_input.response_builder.add_directive(
                     RenderDocumentDirective(
                         token=token,
@@ -63,10 +65,35 @@ class LaunchRequestHandler(AbstractRequestHandler):
                             "type": "Link"
                         },
                         datasources={
-                            "helloWorldDataSource":{
-                                "title": "We did it!",
-                                "subtitle": "Hello World is coming from code!",
-                                "color": "@colorTeal800"
+                            "imageTemplateData": {
+                                "type": "object",
+                                "objectId": "imageSample",
+                                "properties": {
+                                    "backgroundImage": {
+                                        "contentDescription": None,
+                                        "smallSourceUrl": None,
+                                        "largeSourceUrl": None,
+                                        "sources": [
+                                            {
+                                                "url": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/gridlist/GridListBackground_Dark.png",
+                                                "size": "large"
+                                            }
+                                        ]
+                                    },
+                                    "image": {
+                                        "contentDescription": None,
+                                        "smallSourceUrl": None,
+                                        "largeSourceUrl": None,
+                                        "sources": [
+                                            {
+                                                "url": "https://picsum.photos/300/200",
+                                                "size": "large"
+                                            }
+                                        ]
+                                    },
+                                    "title": "Plant of the day",
+                                    "logoUrl": "https://d2o906d8ln7ui1.cloudfront.net/images/templates_v3/logo/logo-modern-botanical-white.png"
+                                }
                             }
                         }
                     )
@@ -84,16 +111,76 @@ class LaunchRequestHandler(AbstractRequestHandler):
                 )
         else:
             logging.info('This device does not support APL. \r\n Supported Interfaces: \r\n {supported_interfaces}')
-
-
+        #
+        #
         speak_output = "Welcome, you can say Hello or Help. Which would you like to try?"
-
+        #
         return (
             handler_input.response_builder
                 .speak(speak_output)
                 .ask(speak_output)
                 .response
-        )
+    )
+
+
+    # The old handler from earlier in the tutorial
+    #def handle(self, handler_input):
+    #    # type: (HandlerInput) -> Response
+    #    logging.info("Handling...")
+    #    supported_interfaces = ask_utils.request_util.get_supported_interfaces(handler_input)
+    #    # If this device supports APL 
+    #    # e.g. If this device is an Echo Show
+    #    if supported_interfaces.alexa_presentation_apl is not None:
+    #        logging.info('This device supports APL')
+    #
+    #        # Flag you can toggle based on where your APL is
+    #        # This isnt production code, its just for demonstration purposes
+    #        the_api_document_is_only_in_the_developer_console = True
+    #
+    #        # add "Alexa.Presentation.APL.RenderDocument" to the handler_input
+    #        if the_api_document_is_only_in_the_developer_console:
+    #            # if your APL is only in the console, load it from the console
+    #            document_name = "HelloWorldDocument" # The name of the APL we saved
+    #            token = document_name + "Token"
+    #            handler_input.response_builder.add_directive(
+    #                RenderDocumentDirective(
+    #                    token=token,
+    #                    document={
+    #                        "src":'doc://alexa/apl/documents/' + document_name,
+    #                        "type": "Link"
+    #                    },
+    #                    datasources={
+    #                        "helloWorldDataSource":{
+    #                            "title": "We did it!",
+    #                            "subtitle": "Hello World is coming from code!",
+    #                            "color": "@colorTeal800"
+    #                        }
+    #                    }
+    #                )
+    #            )
+    #        else:
+    #            # if your APL is alongside the code, load it from the package
+    #            # NOTE: it must be in a specefic place (in the lambda folder)
+    #            # see https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/use-apl-with-ask-sdk.html 
+    #            # for more detail
+    #            handler_input.response_builder.add_directive(
+    #                RenderDocumentDirective(
+    #                    token=HELLO_WORLD_TOKEN,
+    #                    document=_load_apl_document()
+    #                )
+    #            )
+    #    else:
+    #        logging.info('This device does not support APL. \r\n Supported Interfaces: \r\n {supported_interfaces}')
+    #
+    #
+    #    speak_output = "Welcome, you can say Hello or Help. Which would you like to try?"
+    #
+    #    return (
+    #        handler_input.response_builder
+    #            .speak(speak_output)
+    #            .ask(speak_output)
+    #            .response
+    #    )
 
 
 class HelloWorldIntentHandler(AbstractRequestHandler):

@@ -15,4 +15,4 @@ functions:
   hello:
     handler: hello_world.handler
     events: 
-      - alexaSkill: amzn1.ask.skillxx-xx-xx
+      - alexaSkill: amzn1.ask.skillxxx

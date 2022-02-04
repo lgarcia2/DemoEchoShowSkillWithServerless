@@ -3,7 +3,7 @@
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "arn"
+          "uri": "arn:TODO"
         },
         "interfaces": [
           {
